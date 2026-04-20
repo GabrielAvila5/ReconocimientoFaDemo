@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  faceDescriptor Json         // 128 elements float array
+  createdAt      DateTime     @default(now())
+  attendances    Attendance[]
+}
+
+model Attendance {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  confidence Float    
+  timestamp  DateTime @default(now())
+}
