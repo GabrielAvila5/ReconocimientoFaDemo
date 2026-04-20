@@ -12,8 +12,10 @@ export default function UsersList() {
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
   useEffect(() => {
-    fetch('http://localhost:3000/api/users')
+    fetch(`${API_URL}/users`)
       .then(res => res.json())
       .then(data => {
         setUsers(data);
@@ -29,7 +31,7 @@ export default function UsersList() {
     if (!window.confirm(`¿Estás seguro que deseas eliminar a ${name} y todos sus registros de asistencia?`)) return;
     
     try {
-      const res = await fetch(`http://localhost:3000/api/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_URL}/users/${id}`, { method: 'DELETE' });
       if (res.ok) {
          setUsers(users.filter(u => u.id !== id));
       } else {

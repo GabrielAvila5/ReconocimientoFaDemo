@@ -5,7 +5,7 @@ interface CameraViewProps {
   mode: 'validate' | 'register';
 }
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export default function CameraView({ mode }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
