@@ -1,12 +1,36 @@
-FROM node:22-slim
+FROM node:18-slim
 
-# Instalar openssl (requerido por Prisma en Linux)
-RUN apt-get update -y && apt-get install -y openssl
+# Instalar dependencias del sistema necesarias para face-api.js (canvas, etc.)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Establecer directorio de trabajo
 WORKDIR /app
 
-# El comando de inicio incluye npm install para asegurar regenerar binarios nativos 
-# (como los de Prisma y otros paquetes) antes de ejecutar generate, db push y dev,
-# permitiendo así el Hot Reload en volúmenes montados.
-CMD ["sh", "-c", "npm install && npx prisma generate && npx prisma db push && npm run dev"]
+# Copiar archivos de configuración de paquetes
+COPY package*.json ./
+
+# Instalar dependencias de la aplicación
+RUN npm install
+
+# Copiar configuración de TypeScript y Prisma
+COPY tsconfig.json ./
+COPY prisma ./prisma/
+
+# Copiar código fuente
+COPY src ./src/
+
+# Construir la aplicación y generar el cliente Prisma
+RUN npm run build
+
+# Exponer el puerto
+EXPOSE 3000
+
+# Comando de inicio
+CMD ["npm", "start"]
