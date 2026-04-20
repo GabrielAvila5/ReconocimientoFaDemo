@@ -1,7 +1,13 @@
-FROM node:22-alpine
+FROM node:20-alpine
 
-# Establecer directorio de trabajo
 WORKDIR /app
 
-# Instalar dependencias si faltan (para mantener consistencia si cambia el .json desde Linux) y arrancar Vite accesible externamente
-CMD ["sh", "-c", "npm install && npm run dev -- --host 0.0.0.0"]
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+EXPOSE 4173
+
+CMD ["npm", "start"]
